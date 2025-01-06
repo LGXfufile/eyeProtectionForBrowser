@@ -1,96 +1,65 @@
-const { createApp, ref } = Vue;
-
-const app = createApp({
-    setup() {
-        const title = ref('Dark Mode & Eye Protection');
-        const darkMode = ref(false);
-        const eyeCareMode = ref(false);
-        const brightness = ref(100);
-        const debug = ref('');
-
-        // Debug function
-        const log = (msg) => {
-            debug.value = `${new Date().toLocaleTimeString()}: ${msg}\n${debug.value}`;
-            console.log(msg);
-        };
-
-        log('App starting...');
-
-        const toggleDarkMode = async () => {
-            log(`Toggling dark mode: ${darkMode.value}`);
+const app = Vue.createApp({
+    data() {
+        return {
+            darkMode: false,
+            eyeCareMode: false,
+            brightness: 100
+        }
+    },
+    methods: {
+        async toggleDarkMode() {
             try {
                 const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
                 if (tab) {
                     await chrome.tabs.sendMessage(tab.id, {
                         type: 'darkMode',
-                        enabled: darkMode.value
+                        enabled: this.darkMode
                     });
-                    await chrome.storage.local.set({ darkMode: darkMode.value });
-                    log('Dark mode toggled successfully');
+                    await chrome.storage.local.set({ darkMode: this.darkMode });
                 }
             } catch (error) {
-                log(`Error: ${error.message}`);
+                console.error('Dark mode error:', error);
+                this.darkMode = !this.darkMode;
             }
-        };
+        },
 
-        const toggleEyeCareMode = async () => {
-            log(`Toggling eye care mode: ${eyeCareMode.value}`);
+        async toggleEyeCare() {
             try {
                 const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
                 if (tab) {
                     await chrome.tabs.sendMessage(tab.id, {
                         type: 'eyeCare',
-                        enabled: eyeCareMode.value
+                        enabled: this.eyeCareMode
                     });
-                    await chrome.storage.local.set({ eyeCareMode: eyeCareMode.value });
-                    log('Eye care mode toggled successfully');
+                    await chrome.storage.local.set({ eyeCareMode: this.eyeCareMode });
                 }
             } catch (error) {
-                log(`Error: ${error.message}`);
+                console.error('Eye care error:', error);
+                this.eyeCareMode = !this.eyeCareMode;
             }
-        };
+        },
 
-        const adjustBrightness = async () => {
-            log(`Adjusting brightness: ${brightness.value}`);
+        async updateBrightness() {
             try {
                 const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
                 if (tab) {
                     await chrome.tabs.sendMessage(tab.id, {
                         type: 'brightness',
-                        value: brightness.value
+                        value: this.brightness
                     });
-                    await chrome.storage.local.set({ brightness: brightness.value });
-                    log('Brightness adjusted successfully');
+                    await chrome.storage.local.set({ brightness: this.brightness });
                 }
             } catch (error) {
-                log(`Error: ${error.message}`);
+                console.error('Brightness error:', error);
             }
-        };
-
-        // Load saved settings
+        }
+    },
+    mounted() {
+        // 加载保存的设置
         chrome.storage.local.get(['darkMode', 'eyeCareMode', 'brightness'], (result) => {
-            log('Loading saved settings...');
-            darkMode.value = result.darkMode || false;
-            eyeCareMode.value = result.eyeCareMode || false;
-            brightness.value = result.brightness || 100;
-            log('Settings loaded');
+            this.darkMode = result.darkMode || false;
+            this.eyeCareMode = result.eyeCareMode || false;
+            this.brightness = result.brightness || 100;
         });
-
-        return {
-            title,
-            darkMode,
-            eyeCareMode,
-            brightness,
-            debug,
-            toggleDarkMode,
-            toggleEyeCareMode,
-            adjustBrightness
-        };
     }
-});
-
-// Mount the app when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-    app.mount('#app');
-    console.log('App mounted');
-}); 
+}).mount('#app'); 
