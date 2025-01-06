@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark Mode & Eye Protection</title>
+    <style>
+        body {
+            width: 300px;
+            padding: 16px;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h3>{{ title }}</h3>
+        <div>
+            <label>
+                <input type="checkbox" v-model="darkMode" @change="toggleDarkMode">
+                暗黑模式
+            </label>
+        </div>
+        <div>
+            <label>
+                <input type="checkbox" v-model="eyeCareMode" @change="toggleEyeCareMode">
+                护眼模式
+            </label>
+        </div>
+        <div>
+            <label>
+                亮度: {{ brightness }}%
+                <input type="range" v-model="brightness" min="50" max="150" @change="adjustBrightness">
+            </label>
+        </div>
+        <pre>{{ debug }}</pre>
+    </div>
+
+    <script src="vue.js"></script>
+    <script src="popup.js"></script>
+</body>
+</html> 

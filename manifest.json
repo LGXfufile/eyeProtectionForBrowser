@@ -1,0 +1,44 @@
+{
+  "manifest_version": 3,
+  "name": "Dark Mode & Eye Protection",
+  "version": "1.0.0",
+  "description": "A Chrome extension for dark mode and eye protection",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting",
+    "tabs"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'unsafe-inline'; object-src 'self'"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  "web_accessible_resources": [{
+    "resources": ["popup/*", "lib/*"],
+    "matches": ["<all_urls>"]
+  }],
+  "action": {
+    "default_popup": "popup/index.html",
+    "default_icon": {
+      "16": "img/1.jpg",
+      "48": "img/2.jpg",
+      "128": "img/3.jpg"
+    }
+  },
+  "icons": {
+    "16": "img/1.jpg",
+    "48": "img/2.jpg",
+    "128": "img/3.jpg"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+} 
